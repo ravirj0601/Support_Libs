@@ -10,9 +10,9 @@ bool FileHandler::write(string fileName, string data){
         cout << "File does not exist... \n";
         return 0;
     }
-    ofstream file(fileName);
+    ofstream file(fileName,ios::in | ios::ate);
     if(file.is_open()){
-        file << data;   
+        file << data + "\n";   
         file.close();
     }
     else{
@@ -46,4 +46,92 @@ string FileHandler::read(string fileName, string bookName){
     }
     return "";
 }
-  
+
+bool FileHandler::readAll(string fileName){
+    if(!checkFile(fileName)){
+        cout << "File does not exist... \n";
+        return 0;
+    }
+    string line;
+    ifstream file(fileName);
+    if(file.is_open()){
+        while(getline(file, line)){
+            cout << line << "\n";  
+        }        
+        file.close();
+    }
+    return 1;
+}
+
+
+bool FileHandler::update(string fileName, string lineName, string data){
+    if(!checkFile(fileName)){
+        cout << "File does not exist... \n";
+        return 0;
+    }
+    string line;
+    ifstream oldfile(fileName);
+    ofstream temp("temp.txt");
+    bool found = false;
+    if(oldfile.is_open() && temp.is_open()){
+        while(getline(oldfile, line)){
+            if(line.find(lineName) != string::npos){
+                cout << "Found...\n";
+                temp << data + "\n";
+                found = true;
+            }else{
+                temp << line << "\n";
+            }
+        }
+        oldfile.close();
+        temp.close();
+    }
+    if(found){
+        std::remove(fileName.c_str());
+        std::rename("temp.txt", fileName.c_str());
+    }
+
+    return 1;
+}   
+
+
+bool FileHandler::fileRemove(string fileName, string lineName){
+    if(!checkFile(fileName)){
+        cout << "File does not exist... \n";
+        return 0;
+    }
+    string line;
+    ifstream oldfile(fileName);
+    ofstream temp("temp.txt");
+    bool found = false;
+    if(oldfile.is_open() && temp.is_open()){
+        while(getline(oldfile, line)){
+            if(line.find(lineName) != string::npos){
+                cout << "Found...\n";
+                found = true;
+            }else{
+                temp << line << "\n";
+            }
+        }
+        oldfile.close();
+        temp.close();
+    }
+    if(found){
+        std::remove(fileName.c_str());
+        std::rename("temp.txt", fileName.c_str());
+    }
+
+    return 1;
+}   
+
+
+
+
+
+
+
+
+
+
+
+
